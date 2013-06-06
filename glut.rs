@@ -13,7 +13,8 @@ use glut::bindgen::{glutCreateWindow, glutDestroyWindow, glutDisplayFunc, glutMo
 use glut::bindgen::{glutKeyboardFunc, glutGetModifiers, glutMotionFunc, glutPassiveMotionFunc};
 use glut::bindgen::{glutGet, glutGetWindow};
 use glut::bindgen::{glutInit, glutInitDisplayMode, glutPostRedisplay, glutReshapeFunc};
-use glut::bindgen::{glutReshapeWindow, glutSetWindow, glutSwapBuffers, glutTimerFunc};
+use glut::bindgen::{glutReshapeWindow, glutSetWindow, glutSpecialFunc, glutSwapBuffers};
+use glut::bindgen::{glutTimerFunc};
 use core::libc::*;
 use core::local_data::{local_data_get, local_data_set};
 use core::ptr::{null, to_unsafe_ptr};
@@ -63,6 +64,29 @@ pub static MOUSE_UP: c_int = 1;
 
 static WINDOW_WIDTH: GLenum = 102;
 static WINDOW_HEIGHT: GLenum = 103;
+
+// GLUT special keys.
+pub static KEY_F1: c_int = 1;
+pub static KEY_F2: c_int = 2;
+pub static KEY_F3: c_int = 3;
+pub static KEY_F4: c_int = 4;
+pub static KEY_F5: c_int = 5;
+pub static KEY_F6: c_int = 6;
+pub static KEY_F7: c_int = 7;
+pub static KEY_F8: c_int = 8;
+pub static KEY_F9: c_int = 9;
+pub static KEY_F10: c_int = 10;
+pub static KEY_F11: c_int = 11;
+pub static KEY_F12: c_int = 12;
+pub static KEY_LEFT: c_int = 100;
+pub static KEY_UP: c_int = 101;
+pub static KEY_RIGHT: c_int = 102;
+pub static KEY_DOWN: c_int = 103;
+pub static KEY_PAGE_UP: c_int = 104;
+pub static KEY_PAGE_DOWN: c_int = 105;
+pub static KEY_HOME: c_int = 106;
+pub static KEY_END: c_int = 107;
+pub static KEY_INSERT: c_int = 108;
 
 pub enum State {
     WindowWidth,
@@ -249,6 +273,24 @@ pub fn reshape_func(_window: Window, callback: @fn(x: c_int, y: c_int)) {
     unsafe {
         local_data_set(reshape_callback_tls_key, @callback);
         glutReshapeFunc(reshape_callback);
+    }
+}
+
+pub fn special_callback_tls_key(_callback: @@fn(key: c_int, x: c_int, y: c_int)) {
+    // Empty.
+}
+
+pub extern fn special_callback(key: c_int, x: c_int, y: c_int) {
+    unsafe {
+        let callback = local_data_get(special_callback_tls_key).get();
+        (*callback)(key, x, y)
+    }
+}
+
+pub fn special_func(callback: @fn(key: c_int, x: c_int, y: c_int)) {
+    unsafe {
+        local_data_set(special_callback_tls_key, @callback);
+        glutSpecialFunc(special_callback)
     }
 }
 
